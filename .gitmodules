@@ -1,0 +1,4 @@
+[submodule "client"]
+	path = client
+	url = git@github.com:niall-byrne/top20-frontend.git
+	branch = master
