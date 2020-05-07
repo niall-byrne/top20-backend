@@ -2,16 +2,16 @@ const lastfm = require("./util/lastfm.api");
 const axios = require("axios");
 
 jest.mock("./util/lastfm.api");
-const serverHost = "http://localhost:5000/";
-const lastfmPath = "lastfm/";
-
 const originalEnvironment = process.env;
 
-describe("Manage Environment", () => {
+describe("Manage Environment, Static File Serving ON", () => {
   let server;
-  let originalEnvironment;
+  const port = 5001;
+  const serverHost = `http://localhost:${port}/`;
+  const lastfmPath = "lastfm/";
 
   beforeAll(() => {
+    process.env.PORT = port;
     process.env.STATIC_SERVER_ENABLED = "1";
     process.env.STATIC_FILE_LOCATION = "test.fixtures";
     process.env.STATIC_FILE_INDEX = "test.html";
@@ -66,7 +66,7 @@ describe("Manage Environment", () => {
     });
   });
 
-  describe("Given a an unknown but valid request to /lastfm/", () => {
+  describe("Given a an unknown user but valid request to /lastfm/", () => {
     beforeEach(() => {
       lastfm.getTopAlbums.mockReset();
       lastfm.getTopAlbums.mockImplementation(() =>
