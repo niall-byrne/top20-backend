@@ -5,18 +5,35 @@ jest.mock("./util/lastfm.api");
 const serverHost = "http://localhost:5000/";
 const lastfmPath = "lastfm/";
 
+const originalEnvironment = process.env;
+
 describe("Manage Environment", () => {
   let server;
+  let originalEnvironment;
 
   beforeAll(() => {
+    process.env.STATIC_SERVER_ENABLED = "1";
+    process.env.STATIC_FILE_LOCATION = "test.fixtures";
+    process.env.STATIC_FILE_INDEX = "test.html";
     server = require("./server");
   });
 
   afterAll(function (done) {
+    process.env = originalEnvironment;
     server.close(done);
   });
 
-  describe("Given Invalid Data", () => {
+  describe("Given a Valid Static File Request to /lastfm/", () => {
+    it("returns a 200 on success", async (done) => {
+      await axios.get(serverHost + "/test.html").then((response) => {
+        expect(response.data).toEqual("HTML ROOT\n");
+        expect(response.status).toEqual(200);
+      });
+      done();
+    });
+  });
+
+  describe("Given Invalid Data to /lastfm/", () => {
     it("returns a 400 error", async (done) => {
       await axios.post(serverHost + lastfmPath, {}).catch((err) => {
         expect(err.response.data).toEqual({ content: "Bad Request" });
@@ -26,7 +43,7 @@ describe("Manage Environment", () => {
     });
   });
 
-  describe("Given a Valid Request", () => {
+  describe("Given a Valid Request to /lastfm/", () => {
     beforeEach(() => {
       lastfm.getTopAlbums.mockReset();
       lastfm.getTopAlbums.mockImplementation(() =>
@@ -49,7 +66,7 @@ describe("Manage Environment", () => {
     });
   });
 
-  describe("Given a an unknown but valid request", () => {
+  describe("Given a an unknown but valid request to /lastfm/", () => {
     beforeEach(() => {
       lastfm.getTopAlbums.mockReset();
       lastfm.getTopAlbums.mockImplementation(() =>
@@ -70,7 +87,7 @@ describe("Manage Environment", () => {
     });
   });
 
-  describe("Given a Server Error", () => {
+  describe("Given a Server Error to /lastfm/", () => {
     beforeEach(() => {
       lastfm.getTopAlbums.mockReset();
       lastfm.getTopAlbums.mockImplementation(() =>
