@@ -1,7 +1,7 @@
-const lastfm = require("./util/lastfm.api");
+const lastfm = require("../util/lastfm.api");
 const axios = require("axios");
 
-jest.mock("./util/lastfm.api");
+jest.mock("../util/lastfm.api");
 const originalEnvironment = process.env;
 
 describe("Manage Environment, Static File Serving ON", () => {
@@ -15,7 +15,7 @@ describe("Manage Environment, Static File Serving ON", () => {
     process.env.STATIC_SERVER_ENABLED = "1";
     process.env.STATIC_FILE_LOCATION = "test.fixtures";
     process.env.STATIC_FILE_INDEX = "test.html";
-    server = require("./server");
+    server = require("../server");
   });
 
   afterAll(function (done) {

@@ -1,4 +1,4 @@
-const { getTopAlbums, buildUrl } = require("./lastfm.api");
+const { getTopAlbums, buildUrl } = require("../lastfm.api");
 const axios = require("axios");
 
 jest.mock("axios");
