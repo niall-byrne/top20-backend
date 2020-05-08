@@ -15,7 +15,8 @@
     "heroku-postbuild": "git submodule init && cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build",
     "lint": "eslint ./src/**",
     "clean": "eslint --fix ./src/**; prettier --write \"./src/**/*.+(js|jsx|json|yml|yaml|css|scss|md|vue)\"",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "coverage": "jest --coverage --coverageDirectory=coverage"
   },
   "jest": {
     "testMatch": [
@@ -24,6 +25,10 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/client/"
+    ],
+    "coverageReporters": [
+      "text",
+      "html"
     ]
   },
   "dependencies": {

@@ -19,7 +19,6 @@ if (process.env.STATIC_SERVER_ENABLED === "1") {
     express.static(path.join(__dirname, process.env.STATIC_FILE_LOCATION))
   );
   app.get("*", function (req, res) {
-    console.log(path.join(__dirname));
     res.sendFile(
       path.join(
         __dirname,
