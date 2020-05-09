@@ -6,7 +6,6 @@ const path = require("path");
 require("dotenv").config();
 
 const app = express();
-const port = process.env.PORT || 5000;
 
 const { getTopAlbums } = require("./util/lastfm.api");
 
@@ -45,9 +44,10 @@ app.post("/lastfm", (req, res) => {
   }
 });
 
-const server = app.listen(port, (error) => {
+const server = app.listen(process.env.PORT, (error) => {
+  /* istanbul ignore next */
   if (error) throw error;
-  console.log("Server running on port: " + port);
+  console.log("Server running on port: " + process.env.PORT);
 });
 
 module.exports = server;

@@ -23,9 +23,19 @@ describe("Manage Environment, Static File Serving ON", () => {
     server.close(done);
   });
 
-  describe("Given a Valid Static File Request to /lastfm/", () => {
+  describe("Given a Valid Static File Request to /test.html", () => {
     it("returns a 200 on success", async (done) => {
       await axios.get(serverHost + "/test.html").then((response) => {
+        expect(response.data).toEqual("HTML ROOT\n");
+        expect(response.status).toEqual(200);
+      });
+      done();
+    });
+  });
+
+  describe("Given a Valid Static File Request to /", () => {
+    it("hits the default route, and returns a 200 on success", async (done) => {
+      await axios.get(serverHost + "/").then((response) => {
         expect(response.data).toEqual("HTML ROOT\n");
         expect(response.status).toEqual(200);
       });
@@ -66,7 +76,7 @@ describe("Manage Environment, Static File Serving ON", () => {
     });
   });
 
-  describe("Given a an unknown user but valid request to /lastfm/", () => {
+  describe("Given an unknown user but valid request to /lastfm/", () => {
     beforeEach(() => {
       lastfm.getTopAlbums.mockReset();
       lastfm.getTopAlbums.mockImplementation(() =>
