@@ -7,8 +7,8 @@ const originalEnvironment = process.env;
 describe("Manage Environment, Static File Serving ON", () => {
   let server;
   const port = 5001;
-  const serverHost = `http://localhost:${port}/`;
-  const lastfmPath = "lastfm/";
+  const serverHost = `http://localhost:${port}`;
+  const lastfmPath = "/lastfm/";
 
   beforeAll(() => {
     process.env.PORT = port;

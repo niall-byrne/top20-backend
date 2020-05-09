@@ -8,6 +8,10 @@ User Listening Data Visualizations (powered by last.fm)
 
 - Set this value to a valid last.fm API key
 
+1. PORT
+
+- Set this value to a valid listening port for the express server
+
 2. STATIC_SERVER_ENABLED
 
 - Set this value to "1" to enable serving the react application from the backend server

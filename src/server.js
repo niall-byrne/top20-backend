@@ -1,32 +1,32 @@
 const express = require("express");
-const logger = require("express-requests-logger");
+const winston = require("winston");
+const expressWinston = require("express-winston");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
 require("dotenv").config();
 
-const app = express();
-
 const { getTopAlbums } = require("./util/lastfm.api");
+const { getPort } = require("./util/util");
+
+const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-
-if (process.env.STATIC_SERVER_ENABLED === "1") {
-  app.use(
-    express.static(path.join(__dirname, process.env.STATIC_FILE_LOCATION))
-  );
-  app.get("*", function (req, res) {
-    res.sendFile(
-      path.join(
-        __dirname,
-        process.env.STATIC_FILE_LOCATION,
-        process.env.STATIC_FILE_INDEX
-      )
-    );
-  });
-}
+app.use(
+  expressWinston.logger({
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.timestamp(),
+      winston.format.simple()
+    ),
+    transports: [new winston.transports.Console()],
+    level: "info",
+    metaField: null,
+    requestField: null,
+  })
+);
 
 app.post("/lastfm", (req, res) => {
   if (req.body.username === undefined) {
@@ -44,10 +44,25 @@ app.post("/lastfm", (req, res) => {
   }
 });
 
-const server = app.listen(process.env.PORT, (error) => {
+if (process.env.STATIC_SERVER_ENABLED === "1") {
+  app.use(
+    express.static(path.join(__dirname, process.env.STATIC_FILE_LOCATION))
+  );
+  app.get("*", function (req, res) {
+    res.sendFile(
+      path.join(
+        __dirname,
+        process.env.STATIC_FILE_LOCATION,
+        process.env.STATIC_FILE_INDEX
+      )
+    );
+  });
+}
+
+const server = app.listen(getPort(), (error) => {
   /* istanbul ignore next */
   if (error) throw error;
-  console.log("Server running on port: " + process.env.PORT);
+  console.log("Server running on port: " + getPort());
 });
 
 module.exports = server;

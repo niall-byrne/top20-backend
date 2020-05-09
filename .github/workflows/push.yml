@@ -11,15 +11,19 @@ jobs:
         run: |
           git submodule init
           npm install
-      - name: Test Code Can Build
-        run: |
-          # npm run build
       - name: Run Linter
         run: |
           npm run lint
       - name: Sec Test
         run: |
           npm audit --audit-level=moderate
-      - name: Unit Tests
+      - name: Unit Tests and Coverage
         run: |
-          npm test
+          npm run coverage
+      - name: Report Job Status
+        if: always()
+        run: |
+          if [[ $status == "Failure" ]]; then curl -X POST -H 'Content-type: application/json' --data '{"text":"Top20 Backend: build has failed!"}' "${WEBHOOK_URL}"; fi
+        env:
+          status: ${{job.status}}
+          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
