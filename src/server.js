@@ -4,6 +4,8 @@ const expressWinston = require("express-winston");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
+const enforce = require("express-sslify");
+const compression = require("compression");
 require("dotenv").config();
 
 const { getTopAlbums } = require("./util/lastfm.api");
@@ -27,6 +29,11 @@ app.use(
     requestField: null,
   })
 );
+
+if (process.env.NODE_ENV === "production") {
+  app.use(enforce.HTTPS({ trustProtoHeader: true }));
+  app.use(compression());
+}
 
 app.post("/lastfm", (req, res) => {
   if (req.body.username === undefined) {
