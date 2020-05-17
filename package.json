@@ -1,6 +1,6 @@
 {
   "name": "top20-backend",
-  "license": "UNLICENSED",
+  "license": "MPL-2.0",
   "version": "1.0.0",
   "engines": {
     "node": "v10.15.1",
