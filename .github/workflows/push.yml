@@ -1,6 +1,9 @@
 name: Top20 Automation
 
-on: [push]
+on:
+  push:
+  schedule:
+    - cron: "0 6 * * 1"
 
 jobs:
   backend:
