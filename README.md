@@ -23,3 +23,7 @@ User Listening Data Visualizations (powered by last.fm)
 4. STATIC_FILE_INDEX
 
 - Set this value to "index.html", the name of the default index document used by React.
+
+4. SERVERLESS
+
+- Set this value to "1" to enable exporting the server as a serverless application.

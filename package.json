@@ -7,6 +7,7 @@
     "npm": "6.4.1"
   },
   "scripts": {
+    "serverless": "functions-framework --target=lastfm --source=./src --signature-type=http",
     "client": "cd client && pwd && npm start",
     "server": "nodemon src/server.js",
     "build": "cd client && npm run build",
@@ -40,6 +41,7 @@
     }
   },
   "dependencies": {
+    "@google-cloud/functions-framework": "^1.5.1",
     "axios": "^0.19.2",
     "body-parser": "^1.18.3",
     "compression": "^1.7.4",
