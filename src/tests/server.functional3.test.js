@@ -1,5 +1,7 @@
 const enforce = require("express-sslify");
 const axios = require("axios");
+const express = require("express");
+const http = require("http");
 
 mockCompression = jest.fn();
 jest.mock("express-sslify");
@@ -21,6 +23,7 @@ describe("Manage Environment, Set Production Environment", () => {
     mockCompression.mockImplementation(() => (req, res, next) => {
       next();
     });
+    process.env.SERVERLESS = "";
     process.env.PORT = port;
     process.env.NODE_ENV = "production";
     process.env.STATIC_SERVER_ENABLED = "1";
@@ -39,5 +42,9 @@ describe("Manage Environment, Set Production Environment", () => {
     expect(enforce.HTTPS.mock.calls[0][0]).toEqual({ trustProtoHeader: true });
     expect(mockCompression.mock.calls.length).toBe(1);
     done();
+  });
+
+  it("should have exported a full express server, rather than a handler", () => {
+    expect(server).toBeInstanceOf(http.Server);
   });
 });

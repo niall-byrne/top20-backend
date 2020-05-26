@@ -66,10 +66,13 @@ if (process.env.STATIC_SERVER_ENABLED === "1") {
   });
 }
 
-const server = app.listen(getPort(), (error) => {
-  /* istanbul ignore next */
-  if (error) throw error;
-  console.log("Server running on port: " + getPort());
-});
-
-module.exports = server;
+if (process.env.SERVERLESS === "1") {
+  module.exports = app;
+} else {
+  const server = app.listen(getPort(), (error) => {
+    /* istanbul ignore next */
+    if (error) throw error;
+    console.log("Server running on port: " + getPort());
+  });
+  module.exports = server;
+}

@@ -10,6 +10,7 @@ describe("Manage Environment, Static File Serving OFF", () => {
   const serverHost = `http://localhost:${port}/`;
 
   beforeAll(() => {
+    process.env.SERVERLESS = "";
     process.env.PORT = port;
     process.env.STATIC_SERVER_ENABLED = "0";
     process.env.STATIC_FILE_LOCATION = "test.fixtures";
