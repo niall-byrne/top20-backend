@@ -1,6 +1,7 @@
 {
   "name": "top20-backend",
   "license": "UNLICENSED",
+  "main": "./src/index.js",
   "version": "1.0.0",
   "engines": {
     "node": "v10.15.1",
