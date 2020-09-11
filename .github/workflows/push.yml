@@ -30,3 +30,87 @@ jobs:
         env:
           status: ${{job.status}}
           WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+    
+      - name: Stage -- Prepare for Deploy 
+        if: ${{ github.ref == 'refs/heads/develop' && github.event_name == 'push' }}
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '302.0.0'
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      - name: Stage -- Automated Deploy      
+        if: ${{ github.ref == 'refs/heads/develop' && github.event_name == 'push' }}
+        run: |
+          echo -n "${STAGE_ENV}" | base64 --decode > .env.yaml
+          gcloud functions deploy top-20-backend-stage --entry-point lastfm --runtime nodejs10 --trigger-http --env-vars-file=.env.yaml
+        env:
+          STAGE_ENV: ${{ secrets.STAGE_ENV }}  
+      - name: Stage -- Report Success
+        if: ${{ github.ref == 'refs/heads/develop' && github.event_name == 'push' }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Top20 Backend: automated deploy of develop branch successful!"}' "${WEBHOOK_URL}"
+        env:
+          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+      - name: Stage -- Report Failure
+        if: ${{ failure() }}
+        run: |
+          [[ ${REF} == 'refs/heads/develop' ]] && [[ ${EVENT} == 'push' ]] && curl -X POST -H 'Content-type: application/json' --data '{"text":"Top20 Backend: automated deploy of develop branch failed!"}' "${WEBHOOK_URL}"
+        env:
+          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          REF: ${{ github.ref }}
+          EVENT: ${{ github.event_name }}
+      
+      - name: Production -- Detect A Release Tag
+        if: contains(github.ref, '/tags/v') == true
+        run: |
+          GIT_DIFF=$(git diff origin/master)
+          echo "::set-env name=GIT_DIFF::${GIT_DIFF}"
+      - name: Production -- Ignore Non-Release Tags and Branches
+        if: contains(github.ref, '/tags/v') != true
+        run: |
+          GIT_DIFF="not a release"
+          echo "::set-env name=GIT_DIFF::${GIT_DIFF}"
+
+      - name: Production -- Prepare Release Content
+        if: env.GIT_DIFF == ''
+        run: |
+          NEWTAG=${GITHUB_REF#refs/tags/}
+          echo "::set-env name=NEWTAG::${NEWTAG}"
+      - name: Production -- Generate Changelog
+        if: env.GIT_DIFF == ''
+        uses: scottbrenner/generate-changelog-action@master
+        id: Changelog
+        env:
+          REPO: ${{ github.repository }}
+      - name: Production -- Create Release
+        if: env.GIT_DIFF == ''
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.NEWTAG }}
+          release_name: Release ${{ env.NEWTAG }}
+          body: |
+            ${{ steps.Changelog.outputs.changelog }}
+          draft: true
+          prerelease: false
+
+      - name: Production -- Checkout Master Branch
+        if: env.GIT_DIFF == ''
+        run: |
+          git checkout origin/master
+      - name: Production -- Report Success
+        if: env.GIT_DIFF == ''
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Top20 Backend: automated release has been created for ${TAG}: https://github.com/playcounts/top20-backend/releases\"}" "${WEBHOOK_URL}"
+        env:
+          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          TAG: ${{ env.NEWTAG }}
+      - name: Production -- Report Failure
+        if: ${{ failure() }}
+        run: |
+          [[ -z ${GIT_DIFF} ]] && curl -X POST -H 'Content-type: application/json' --data '{"text":"Top20 Backend: automated production release has failed!"}' "${WEBHOOK_URL}"
+        env:
+          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          GIT_DIFF: ${{ env.GIT_DIFF }}
