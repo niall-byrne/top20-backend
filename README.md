@@ -1,8 +1,16 @@
-# TOP 20 Backend
+# TOP 20 Backend Code
 
 User Listening Data Visualizations (powered by last.fm)
 
-https://niall-byrne.github.io/top20-frontend/
+## Develop Branch (Stage)
+- ![Top20 Automation](https://github.com/playcounts/top20-backend/workflows/Top20%20Automation/badge.svg?branch=develop)
+
+[Stage Environment](https://top-20-stage-3ba4c.web.app/)
+
+## Master Branch (Production)
+- ![Top20 Automation](https://github.com/playcounts/top20-backend/workflows/Top20%20Automation/badge.svg?branch=master)
+
+[Production Environment](https://top-20-prod-f358c.web.app/)
 
 ## Environment Variabes
 
