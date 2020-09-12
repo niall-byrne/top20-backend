@@ -1,0 +1,41 @@
+name: Top20-ProductionDeploys
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install Node Modules
+        run: |
+          npm install
+      - name: Prod -- Prepare for Deploy 
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '302.0.0'
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      - name: Prod -- Automated Deploy      
+        run: |
+          echo -n "${PROD_ENV}" | base64 --decode > .env.yaml
+          gcloud functions deploy top-20-backend-prod --entry-point lastfm --runtime nodejs10 --trigger-http --env-vars-file=.env.yaml
+        env:
+          PROD_ENV: ${{ secrets.PROD_ENV }}  
+      - name: Production -- Report Success
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Top20 Backend: automated production deployment was successful!"}' "${WEBHOOK_URL}"
+        env:
+          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+      - name: Production -- Report Failure
+        if: ${{ failure() }}
+        run: |
+          [[ -z ${GIT_DIFF} ]] && curl -X POST -H 'Content-type: application/json' --data '{"text":"Top20 Backend: automated production deployment has failed!"}' "${WEBHOOK_URL}"
+        env:
+          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          GIT_DIFF: ${{ env.GIT_DIFF }}
