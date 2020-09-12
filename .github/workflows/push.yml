@@ -43,7 +43,8 @@ jobs:
         if: ${{ github.ref == 'refs/heads/develop' && github.event_name == 'push' }}
         run: |
           echo -n "${STAGE_ENV}" | base64 --decode > .env.yaml
-          gcloud functions deploy top-20-backend-stage --entry-point lastfm --runtime nodejs10 --trigger-http --env-vars-file=.env.yaml --source=.
+          echo "Deploying ..."
+          gcloud functions deploy top-20-backend-stage --entry-point lastfm --runtime nodejs10 --trigger-http --env-vars-file=.env.yaml --source=. --allow-unauthenticated > /dev/null
         env:
           STAGE_ENV: ${{ secrets.STAGE_ENV }}  
       - name: Stage -- Report Success
