@@ -25,7 +25,7 @@ jobs:
         run: |
           echo -n "${PROD_ENV}" | base64 --decode > .env.yaml
           echo "Deploying ..."
-          gcloud functions deploy top-20-backend-prod --entry-point lastfm --runtime nodejs10 --trigger-http --env-vars-file=.env.yaml --source=. --allow-unauthenticated > /dev/null
+          gcloud functions deploy top-20-backend-prod --entry-point lastfm --runtime nodejs10 --trigger-http --env-vars-file=.env.yaml --source=. --allow-unauthenticated 2>&1 > /dev/null
         env:
           PROD_ENV: ${{ secrets.PROD_ENV }}  
       - name: Production -- Report Success
