@@ -14,20 +14,20 @@ jobs:
       - name: Install Node Modules
         run: |
           npm install
-      - name: Prod -- Prepare for Deploy 
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      - name: Prod -- Prepare for Deploy
+        uses: google-github-actions/setup-gcloud@master
         with:
-          version: '302.0.0'
+          version: "302.0.0"
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
-      - name: Prod -- Automated Deploy      
+      - name: Prod -- Automated Deploy
         run: |
           echo -n "${PROD_ENV}" | base64 --decode > .env.yaml
           echo "Deploying ..."
           gcloud functions deploy top-20-backend-prod --entry-point lastfm --runtime nodejs10 --trigger-http --env-vars-file=.env.yaml --source=. --allow-unauthenticated 2>&1 > /dev/null
         env:
-          PROD_ENV: ${{ secrets.PROD_ENV }}  
+          PROD_ENV: ${{ secrets.PROD_ENV }}
       - name: Production -- Report Success
         run: |
           curl -X POST -H 'Content-type: application/json' --data '{"text":"Top20 Backend: automated production deployment was successful!"}' "${WEBHOOK_URL}"

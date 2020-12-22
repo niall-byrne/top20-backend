@@ -34,7 +34,7 @@ jobs:
 
       - name: Stage -- Prepare for Deploy
         if: ${{ github.ref == 'refs/heads/develop' && github.event_name == 'push' }}
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@master
         with:
           version: "302.0.0"
           project_id: ${{ secrets.GCP_PROJECT_ID }}
