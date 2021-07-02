@@ -15,7 +15,7 @@ jobs:
         run: |
           npm install
       - name: Prod -- Prepare for Deploy
-        uses: google-github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@v0.2.1
         with:
           version: "302.0.0"
           project_id: ${{ secrets.GCP_PROJECT_ID }}
