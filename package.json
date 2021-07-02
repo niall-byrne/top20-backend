@@ -9,12 +9,10 @@
   },
   "scripts": {
     "serverless": "functions-framework --target=lastfm --source=./src --signature-type=http",
-    "client": "cd client && pwd && npm start",
     "server": "nodemon src/server.js",
     "build": "cd client && npm run build",
-    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
+    "dev": "concurrently --kill-others-on-fail \"npm run server\"",
     "start": "node src/server.js",
-    "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build",
     "lint": "eslint ./src/** --no-error-on-unmatched-pattern",
     "clean": "eslint --fix ./src/** --no-error-on-unmatched-pattern; prettier --write \"./src/**/*.+(js|jsx|json|yml|yaml|css|scss|md|vue)\"",
     "test": "jest --verbose",
