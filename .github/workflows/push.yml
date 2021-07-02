@@ -20,7 +20,7 @@ jobs:
           npm run lint
       - name: Sec Test
         run: |
-          npm audit --audit-level=moderate
+          npm audit --production
       - name: Unit Tests and Coverage
         run: |
           npm run coverage
@@ -34,7 +34,7 @@ jobs:
 
       - name: Stage -- Prepare for Deploy
         if: ${{ github.ref == 'refs/heads/develop' && github.event_name == 'push' }}
-        uses: google-github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@v0.2.1
         with:
           version: "302.0.0"
           project_id: ${{ secrets.GCP_PROJECT_ID }}
@@ -69,8 +69,8 @@ jobs:
           NEWTAG=${GITHUB_REF#refs/tags/}
           echo "NEWTAG=${NEWTAG}" >> $GITHUB_ENV
       - name: Production -- Generate Changelog
-        if: contains(github.ref, '/tags/v')
-        uses: scottbrenner/generate-changelog-action@master
+        if: env.GIT_DIFF == ''
+        uses: scottbrenner/generate-changelog-action@v1.3.3
         id: Changelog
         env:
           REPO: ${{ github.repository }}
