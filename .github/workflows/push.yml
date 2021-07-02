@@ -69,7 +69,7 @@ jobs:
           NEWTAG=${GITHUB_REF#refs/tags/}
           echo "NEWTAG=${NEWTAG}" >> $GITHUB_ENV
       - name: Production -- Generate Changelog
-        if: env.GIT_DIFF == ''
+        if: contains(github.ref, '/tags/v')
         uses: scottbrenner/generate-changelog-action@v1.3.3
         id: Changelog
         env:
